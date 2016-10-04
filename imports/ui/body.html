@@ -1,0 +1,17 @@
+<body>
+	<div class="container">
+		<header>
+			<h1>home::{{player}}</h1>
+		</header>
+
+		<ul>
+			{{#each players}}
+			{{> player}}
+			{{/each}}
+		</ul>
+	</div>
+</body>
+
+<template name="player">
+	<li><span style="color:{{color}}">{{name}}</span></li>
+</template>
