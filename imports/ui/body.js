@@ -13,7 +13,6 @@ Template.body.helpers({
 });
 
 Template.body.onRendered = function () {
-	console.log("Hellotations");
 	var stage = new PIXI.Container();
 	var renderer = PIXI.autoDetectRenderer(500, 500);
 	document.body.appendChild(renderer.view);
@@ -31,7 +30,6 @@ Template.body.onRendered = function () {
 		block.position.y = 150;
 		stage.addChild(block);
 		renderer.render(stage);
-		console.log("rendered");
 		theloop();
 	}
 
