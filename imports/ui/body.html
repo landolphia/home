@@ -4,14 +4,16 @@
 			<h1>home::{{player}}</h1>
 		</header>
 
+		{{> loginButtons}}
+
 		<ul>
-			{{#each players}}
-			{{> player}}
+			{{#each usersOnline}}
+			{{> user}}
 			{{/each}}
 		</ul>
 	</div>
 </body>
 
-<template name="player">
-	<li><span style="color:{{color}}">{{name}}</span></li>
+<template name="user">
+	<li><span>{{username}}</span></li>
 </template>

@@ -3,13 +3,18 @@ import { Template } from 'meteor/templating';
 import './body.html';
 
 import PIXI from 'pixi.js';
- 
+
+Template.body.onCreated(function bodyOnCreated() {
+	Meteor.subscribe('usersOnline');
+});
+
 Template.body.helpers({
-	  players: [
-		      { name: 'Landolphia', color:"#41A317" },
-		      { name: 'Jenanoelle', color:"#842DCE" },
-		      { name: 'Neko', color:"#A0A0A0" },
-		    ],
+	player: function () {
+		return Meteor.user().username;
+	},
+	usersOnline: function () {
+		return Meteor.users.find({"status.online":true});
+	},
 });
 
 Template.body.onRendered = function () {
