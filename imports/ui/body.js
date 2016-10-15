@@ -10,7 +10,10 @@ Template.body.onCreated(function bodyOnCreated() {
 
 Template.body.helpers({
 	player: function () {
-		return Meteor.user().username;
+		if (Meteor.userId() && Meteor.user())
+			return Meteor.user().username;
+		else
+			return "Log in to access more features";
 	},
 	usersOnline: function () {
 		return Meteor.users.find({"status.online":true});
@@ -18,13 +21,13 @@ Template.body.helpers({
 });
 
 Template.body.onRendered = function () {
-	var stage = new PIXI.Container();
-	var renderer = PIXI.autoDetectRenderer(500, 500);
+	let stage = new PIXI.Container();
+	let renderer = PIXI.autoDetectRenderer(100, 100);
 	document.body.appendChild(renderer.view);
 	PIXI.loader
 		.add("coffee", "https://dl.dropboxusercontent.com/u/139992952/coffee.png")
 		.load(setup);
-	var block;
+	let block;
 
 	function setup() {
 		block = new PIXI.Sprite(PIXI.loader.resources.coffee.texture);  
@@ -38,7 +41,7 @@ Template.body.onRendered = function () {
 		theloop();
 	}
 
-	var theloop = function(){
+	let theloop = function(){
 		requestAnimationFrame(theloop);
 		block.rotation += .03;
 		renderer.render(stage);
