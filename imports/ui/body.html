@@ -11,9 +11,22 @@
 			{{> user}}
 			{{/each}}
 		</ul>
+		<h2>Chat</h2>
+		<ul id="chat">
+			{{#each messages}}
+			{{> message}}
+			{{/each}}
+		</ul>
+		<form class="new-message">
+			<input type="text" name="text" placeholder="..." />
+		</form>
 	</div>
 </body>
 
 <template name="user">
-	<li><span>{{username}}</span></li>
+	<li><span class="{{#if currentuser}}currentuser {{/if}}{{#if selected}}selected{{/if}}">{{username}}</span></li>
+</template>
+
+<template name="message">
+	<li><span>{{text}} at {{createdAt}} from {{from}}</span></li>
 </template>
