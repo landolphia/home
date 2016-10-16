@@ -17,9 +17,10 @@ Template.body.helpers({
 			let selected = Session.get("selected");
 			console.log("User(" + Meteor.user()._id + ") wants to select: " + selected);
 			if (selected != null) {
-				return Messages.find({
-					to: Meteor.user()._id,
-					from: selected},
+				return Messages.find(
+					{$or:[
+						{to: Meteor.user()._id, from: selected},
+						{from: Meteor.user()._id, to: selected}]},
 				       	{ sort: { createdAt: -1}});
 			} else {
 				return Messages.find({to: null}, { sort: { createdAt: -1}});
