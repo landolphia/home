@@ -15,7 +15,7 @@ Template.body.helpers({
 	messages () {
 		if (Meteor.user()) {
 			let selected = Session.get("selected");
-			console.log("User(" + Meteor.user()._id + ") wants to select: " + selected);
+			//console.log("User(" + Meteor.user()._id + ") wants to select: " + selected);
 			if (selected != null) {
 				return Messages.find(
 					{$or:[
@@ -47,7 +47,7 @@ Template.body.events({
 		const selected = Session.get("selected");
 		const to = selected;
 
-		console.log(text + " from: " + from + " /-> " + to);
+		//console.log(text + " from: " + from + " /-> " + to);
 
 		Messages.insert({
 			text: text,
@@ -61,31 +61,70 @@ Template.body.events({
 });
 
 Template.body.onRendered = function () {
-	//let stage = new PIXI.Container();
-	//let renderer = PIXI.autoDetectRenderer(100, 100);
-	//document.body.appendChild(renderer.view);
-	//PIXI.loader
+	let stage = new PIXI.Container();
+	let renderer = PIXI.autoDetectRenderer(100, 100);
+
+	let rectangle = new PIXI.Graphics();
+	let line = new PIXI.Graphics();
+
+	let homeMessage = new PIXI.Text(
+		"Home user",
+		{font: "16px sans-serif", fill: "white"}
+	);
+
+	let guestMessage = new PIXI.Text(
+		"Guest user",
+		{font: "16px sans-serif", fill: "grey"}
+	);
+
+	renderer.view.style.border = "2px dashed red";
+	document.body.appendChild(renderer.view);
+	console.log("Help me help you");
+	//PIXI.loader.load(setup);
+	setup();
+	console.log("Help you help me");
 	//	.add("coffee", "https://dl.dropboxusercontent.com/u/139992952/coffee.png")
-	//	.load(setup);
-	//let block;
+		//.on("progress", loadProgressHandler)
+	
+	function loadProgressHandler(loader, resource) {
+		console.log("loading: " + resource.url + " [" + loader.progress + "%]");
+	}
 
-	//function setup() {
-	//	block = new PIXI.Sprite(PIXI.loader.resources.coffee.texture);  
-	//	block.anchor.x = 0.5;
-	//	block.anchor.y = 0.61;
+	function theloop() {
+		console.log("It is here:");
+		if (Meteor.userId() && Meteor.user())
+			homeMessage.text = Meteor.user().username;
+		else	homeMessage.text = "ANON";
+		requestAnimationFrame(theloop);
+		renderer.render(stage);
+	};
 
-	//	block.position.x = 200;
-	//	block.position.y = 150;
-	//	stage.addChild(block);
-	//	renderer.render(stage);
-	//	theloop();
-	//}
+	function setup() {
+		rectangle.beginFill(0x22CC22);
+		rectangle.lineStyle(4, 0xDD44DD, 0.3);
+		rectangle.drawRect(0, 0, 90, 90);
+		rectangle.endFill();
+		rectangle.x = 5;
+		rectangle.y = 5;
+		stage.addChild(rectangle);
 
-	//let theloop = function(){
-	//	requestAnimationFrame(theloop);
-	//	block.rotation += .03;
-	//	renderer.render(stage);
-	//};
+		line.lineStyle(2, 0x2222DD, 1);
+		line.moveTo(0, 0);
+		line.lineTo(80, 0);
+		line.x = 10;
+		line.y = 50;
+		stage.addChild(line);
+		
+		homeMessage.x = 5;
+		homeMessage.y = 10;
+		stage.addChild(homeMessage);
+		guestMessage.x = 15;
+		guestMessage.y = 75;
+		stage.addChild(guestMessage);
+
+		renderer.render(stage);
+		theloop();
+	}
 };
 
 Template.user.events({
@@ -95,7 +134,7 @@ Template.user.events({
 		       if (Meteor.user()._id != this._id) {
 			       Session.set("selected", this._id);
 			       let result = Session.get('selected');
-			       console.log("Set selected as : " + result);
+			       //console.log("Set selected as : " + result);
 		       } else {
 			       Session.set("selected", null);
 		       }
@@ -105,12 +144,12 @@ Template.user.events({
 
 Template.user.helpers({
 	currentuser: function () {
-		console.log ("Current user: " + this._id + " vs " + Meteor.user()._id);
+		//console.log ("Current user: " + this._id + " vs " + Meteor.user()._id);
 		if (Meteor.user()) return this._id == Meteor.user()._id;
 	},
 	selected: function () {
 		let selected = Session.get('selected');
-		console.log ("Selected user: " + this._id + " vs " + selected);
+		//console.log ("Selected user: " + this._id + " vs " + selected);
 		if (Meteor.user() && selected) return this._id == selected;
 	},
 });
