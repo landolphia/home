@@ -1,0 +1,18 @@
+<body>
+	<div class="usersContainer">
+		<h1>{{player}}</h1>
+
+		{{> loginButtons}}
+
+		<ul>
+			{{#each usersOnline}}
+			{{> user}}
+			{{/each}}
+		</ul>
+	</div>
+</body>
+
+<template name="user">
+	<li><span class="{{#if currentuser}}curentuser {{/if}}{{#if selected}}selected{{/if}}">{{username}}</span></li>
+
+</template>

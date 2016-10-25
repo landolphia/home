@@ -1,0 +1,14 @@
+<body>
+	<h2>Chat</h2>
+	<ul id="chat">
+		{{#each messages}}
+		{{> message}}
+		{{/each}}
+	</ul>
+	<form class="new-message">
+		<input type="text" name="text" placeholder="..." />
+	</form>
+</body>
+<template name="message">
+	<li><span>{{text}} at {{createdAt}} from {{from}}</span></li>
+</template>
