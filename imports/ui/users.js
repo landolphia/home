@@ -14,6 +14,10 @@ Template.body.helpers({
 		else
 			return "Log in to access more features";
 	},
+	position: function () {
+		if (Meteor.userId() && Meteor.user())
+			return Meteor.user().position;
+	},
 	usersOnline: function () {
 		return Meteor.users.find({"status.online":true});
 	},
@@ -26,6 +30,7 @@ Template.user.events({
 		       if (Meteor.user()._id != this._id) {
 			       Session.set("selected", this._id);
 			       let result = Session.get('selected');
+			       Meteor.subscribe('messages', result);
 		       } else {
 			       Session.set("selected", null);
 		       }

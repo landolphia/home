@@ -14,3 +14,18 @@ import '../imports/api/messages.js';
 
 Meteor.startup(() => {
 });
+
+Meteor.methods({
+	'player.updatePosition': function(move) {
+		let position = Meteor.user().position;
+		console.log("position: " + position.x);
+		if (position == undefined)  position = {x:0,y:0};
+		position.x += move.x;
+		position.y += move.y;
+		if (position.x<0) position.x = 0;
+		if (position.y<0) position.y = 0;
+		if (position.x>300) position.x = 300;
+		if (position.y>300) position.y = 300;
+		Meteor.users.update(this.userId, {$set: {"position": position}});
+	},
+});
