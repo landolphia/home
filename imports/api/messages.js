@@ -3,9 +3,8 @@ import { Mongo } from 'meteor/mongo';
 export const Messages = new Mongo.Collection('messages');
 
 if (Meteor.isServer) {
-	Meteor.publish('messages', function messagePublication(selected) {
+	Meteor.publish('messages', function messagePublication() {
 		if (this.userId) {
-			console.log("Ze selected parameter: " + selected);
 			let selected = null;
 			if (selected != null) {
 				return Messages.find(

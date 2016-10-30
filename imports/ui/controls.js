@@ -1,12 +1,7 @@
 import { Template } from 'meteor/templating';
-import '../api/player.js';
 
 import './controls.html';
 
-
-Template.body.onCreated(function bodyOnCreated() {
-	Meteor.subscribe('userPosition');
-});
 
 Template.controls.events({
 	'click button' (event) {

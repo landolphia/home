@@ -18,7 +18,6 @@ Meteor.startup(() => {
 Meteor.methods({
 	'player.updatePosition': function(move) {
 		let position = Meteor.user().position;
-		console.log("position: " + position.x);
 		if (position == undefined)  position = {x:0,y:0};
 		position.x += move.x;
 		position.y += move.y;
