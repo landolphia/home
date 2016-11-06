@@ -15,6 +15,7 @@ Template.body.helpers({
 			return "Log in to access more features";
 	},
 	position: function () {
+		console.log("Hitting Template.body.helpers position in ui/users.js");
 		if (Meteor.userId() && Meteor.user())
 			return Meteor.user().position;
 	},
@@ -29,8 +30,6 @@ Template.user.events({
 		if (Meteor.user()) {
 		       if (Meteor.user()._id != this._id) {
 			       Session.set("selected", this._id);
-			       let result = Session.get('selected');
-			       Meteor.subscribe('messages', result);
 		       } else {
 			       Session.set("selected", null);
 		       }

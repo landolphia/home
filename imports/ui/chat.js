@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
 import { Messages } from '../api/messages.js';
@@ -9,18 +10,16 @@ Template.body.onCreated( function onBodyCreated() {
 	Meteor.subscribe('messages');
 });
 
-Template.body.helpers({	messages () { return Messages.find();}});
+Template.body.helpers({	messages () { return Messages.find({}, {limit:5});}});
 
 Template.body.events({
 	'submit .new-message' (event) {
 		event.preventDefault();
 		const target = event.target;
 		const text = target.text.value;
-		const from = Meteor.user()._id;
-		const selected = Session.get("selected");
-		const to = selected;
+		const to = Session.get("selected");
 
-		Meteor.call('messages.insert', text, from, to);
+		Meteor.call('messages.insert', text, to);
 
 		target.text.value = '';
 	},
