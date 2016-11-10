@@ -5,3 +5,7 @@ if (Meteor.isServer) {
 		return Meteor.users.find({"status.online": true});
 	});
 }
+
+if (Meteor.isClient) {
+	Meteor.subscribe('usersOnline');
+}

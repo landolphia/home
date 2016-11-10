@@ -4,35 +4,13 @@ import { Accounts } from 'meteor/accounts-base';
 import '../imports/api/users.js';
 import '../imports/api/messages.js';
 
-import Messages from '../imports/api/messages.js';
+import Messages from '../imports/api/messages';
 
-
-//Accounts.onCreateUser( function (options, user) {
-//	console.log("user");
-//	console.dir(user);
-//	console.log("options");
-//	console.dir(options);
-//	return user;
-//});
 
 Meteor.startup(() => {
 });
 
 Meteor.methods({
-	'messages.insert' (text, to) {
-		if ( ! this.userId ) {
-			throw new Meteor.error("Login to post.");
-		}
-
-		console.log(text + " from " + this.userId + " to " + to);
-
-		Messages.insert({
-			text: text,
-			createdAt: new Date(),
-			from: this.userId,
-			to: to
-		});
-	},
 	'getUserPosition': function(id) {
 		let user = Meteor.users.findOne(id, {fields: {"position": 1}});
 		return user.position;

@@ -1,6 +1,6 @@
 <body>
 	<div class="usersContainer">
-		<h1>{{player}}</h1>
+		<h1>{{player}} : {{position}}</h1>
 
 		{{> loginButtons}}
 
@@ -13,6 +13,6 @@
 </body>
 
 <template name="user">
-	<li><span class="{{#if currentuser}}curentuser {{/if}}{{#if selected}}selected{{/if}}">{{username}}</span></li>
+	<li><span class="{{#if currentuser}}currentuser {{/if}}{{#if selected}}selected{{/if}}">{{username}}</span></li>
 
 </template>

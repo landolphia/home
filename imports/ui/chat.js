@@ -1,14 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
-import { Messages } from '../api/messages.js';
+import Messages from '../api/messages';
  
 import './chat.html';
 
-
-Template.body.onCreated( function onBodyCreated() {
-	Meteor.subscribe('messages');
-});
 
 Template.body.helpers({	messages () { return Messages.find({}, {limit:5});}});
 
