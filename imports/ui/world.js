@@ -1,6 +1,8 @@
 import { Template } from 'meteor/templating';
 
 import PIXI from 'pixi.js';
+
+import '../api/player.js';
  
 import './world.html';
 
@@ -59,7 +61,7 @@ Template.body.onRendered = function () {
 
 	let lastUpdate = Date.now();
 	let delta = 0;
-	let DBUpdateRate = 300;
+	let DBUpdateRate = 200;
 	let lastDBUpdate = Date.now() - DBUpdateRate;
 
 	function theloop() {
@@ -98,9 +100,9 @@ Template.body.onRendered = function () {
 						guestSprite.position.x = result.x;
 						guestSprite.position.y = result.y;
 						guestMessage.position.x = result.x;
-						guestMessage.position.y = result.y - 60;
+						guestMessage.position.y = result.y - 70;
 						if (guestMessage.position.y < 10) {
-							guestMessage.position.y = result.y + 60;
+							guestMessage.position.y = result.y + 70;
 						}
 					}
 				});
@@ -112,9 +114,9 @@ Template.body.onRendered = function () {
 				homeSprite.position.x = c.position.x;
 				homeSprite.position.y = c.position.y;
 				homeMessage.position.x = c.position.x;
-				homeMessage.position.y = c.position.y - 60;
+				homeMessage.position.y = c.position.y - 70;
 				if (homeMessage.position.y < 10) {
-					homeMessage.position.y = c.position.y + 60;
+					homeMessage.position.y = c.position.y + 70;
 				}
 				let hex = parseInt(c.color.substr(1),16);
 				homeSprite.tint = hex;
