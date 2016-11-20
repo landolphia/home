@@ -6,22 +6,37 @@ import Items from '../api/items';
 import './inventory.html';
 
 
-Template.body.helpers({ items () { return Items.find({});}});
-Template.body.helpers({ inventory () { return false;}});
+Template.body.helpers({
+       	items () { return Items.find({});},
+	inventory () { return Meteor.user().inventory;}
+});
+
+Template.inventorySlot.helpers({
+       	getItemName () {
+		let result = ReactiveMethod.call("getItemName", this.id);
+		return result;
+	},
+});
 
 Template.body.events({
-	'click li' (event) {
+	'click #addPen' (event) {
 		event.preventDefault();
-		const target = event.target;
-		const src = target.src;
-		const alt = target.alt;
-
-		console.log("This is the pic's source: " + src);
-		console.log("This is the pic's alt   : " + alt);
+		Meteor.call('addItem', "Pencil", 1);
+	},
+	'click #addCondom' (event) {
+		event.preventDefault();
+		Meteor.call('addItem', "Condom", 1);
+	},
+	'click #addBucket' (event) {
+		event.preventDefault();
+		Meteor.call('addItem', "Bucket", 1);
+	},
+	'click #empty' (event) {
+		event.preventDefault();
+		Meteor.call('emptyInventory');
 	},
 	'click #reset' (event) {
 		event.preventDefault();
-
 		Meteor.call('dummyGen');
 	},
 });

@@ -61,7 +61,7 @@ Template.body.onRendered = function () {
 
 	let lastUpdate = Date.now();
 	let delta = 0;
-	let DBUpdateRate = 200;
+	let DBUpdateRate = 20000;
 	let lastDBUpdate = Date.now() - DBUpdateRate;
 
 	function theloop() {

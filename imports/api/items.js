@@ -11,15 +11,7 @@ if (Meteor.isServer) {
 	});
 
 	Meteor.methods({
-		//'inventory.add' (id, qty) {
-		//	if (this.userId) {
-		//		Items.insert({
-		//			owner:	this.userId,
-		//			uid:	id,
-		//			qty: qty
-		//		});
-		//	}
-		//},
+		'getItemName' (id) { return Items.findOne(id).name;},
 		'dummyGen' () {
 			Items.remove({});
 			Items.insert({ 'name' : 'Pencil', 'src' : 'placeholder.png', 'alt' : 'Mightier than a sword.'});

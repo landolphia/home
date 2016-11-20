@@ -1,21 +1,42 @@
 import { Meteor } from 'meteor/meteor';
 
-if (Meteor.isServer) {
-	Meteor.publish('inventory', function inventoryPublication () {
-		if (this.userId) {
-			console.log("This should return :  + Meteor.user().inventory");
-			return null;
-		}
-	});
+import Items from './items.js';
 
+if (Meteor.isServer) {
 	Meteor.methods({
-		'getUserName': function (id) {
+		'addItem' : function (name, qty) {
+			let item = Items.findOne({'name' : name});
+			if ( item != undefined ) {
+				console.log("Found the item [" + item._id + "]");
+				let user = Meteor.users.findOne(this.userId, {fields: {"inventory" : 1}});
+				let inventory = user.inventory;
+				let found = false;
+				inventory.forEach( function (i) {
+					if (i.id == item._id) {
+						i.qty += qty;
+						found = true;
+					}
+				});
+
+				if (!found) inventory.push({"id" : item._id, "qty" : qty});
+				Meteor.users.update(this.userId, {$set : {"inventory" : inventory}});
+			} else {
+				console.log("[" + name + "] isn't a valid item name.");
+			}
+
+		},
+		'emptyInventory' : function () {
+			console.log("Clearing inventory");
+			let inventory = new Array();
+			Meteor.users.update(this.userId, {$set : {"inventory" : inventory}});
+		},
+		'getUserName' : function (id) {
 			let user = Meteor.users.findOne(id, {fields: {"username" : 1}});
 			let result = user.username;
 			if (result == undefined) { result = "<unnamed>";}
 			return result;
 		},
-		'getUserColor': function (id) {
+		'getUserColor' : function (id) {
 			let user = Meteor.users.findOne(id, {fields: {"color" : 1}});
 			let result = user.color;
 			if (result == undefined) {
@@ -50,8 +71,4 @@ if (Meteor.isServer) {
 			Meteor.users.update(this.userId, {$set : {"position" : position}});
 		},
 	});
-}
-
-if (Meteor.isClient) {
-	Meteor.subscribe('inventory');
 }
