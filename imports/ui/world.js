@@ -11,7 +11,14 @@ import './world.html';
 Template.newWorld.events({
 	'click #createNewWorld' (event) {
 		event.preventDefault();
-		Meteor.call('createWorld', new Array ());
+		if (this.userId) {
+			let selected = Session.get("selected");
+			if (selected != undefined) {
+				console.log("Should create a world with : " + this.userId + " /  "+ selected);
+				//Meteor.call('createWorld', new Array ());
+			}
+		}
+		c
 	},
 });
 
@@ -69,7 +76,7 @@ Template.body.onRendered = function () {
 
 	let lastUpdate = Date.now();
 	let delta = 0;
-	let DBUpdateRate = 9000;
+	let DBUpdateRate = 2000;
 	let lastDBUpdate = Date.now() - DBUpdateRate;
 
 	function theloop() {

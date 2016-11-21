@@ -20,6 +20,7 @@ if (Meteor.isServer) {
 				});
 
 				if (!found) inventory.push({"id" : item._id, "qty" : qty});
+
 				Meteor.users.update(this.userId, {$set : {"inventory" : inventory}});
 			} else {
 				console.log("[" + name + "] isn't a valid item name.");
@@ -27,31 +28,47 @@ if (Meteor.isServer) {
 
 		},
 		'emptyInventory' : function () {
-			console.log("Clearing inventory");
-			let inventory = new Array();
-			Meteor.users.update(this.userId, {$set : {"inventory" : inventory}});
+			if (this.userId) {
+				let inventory = new Array();
+				Meteor.users.update(this.userId, {$set : {"inventory" : inventory}});
+			}
 		},
 		'getUserName' : function (id) {
 			let user = Meteor.users.findOne(id, {fields: {"username" : 1}});
-			let result = user.username;
-			if (result == undefined) { result = "<unnamed>";}
-			return result;
+			if (user != undefined) {
+				let result = user.username;
+				if (result == undefined) { result = "<unnamed>";}
+				return result;
+			}
 		},
 		'getUserColor' : function (id) {
 			let user = Meteor.users.findOne(id, {fields: {"color" : 1}});
-			let result = user.color;
-			if (result == undefined) {
-				result = "#DDDDDD";
-				Meteor.users.update(this.userId, {$set : {"color" : result}});
+			if (user != undefined) {
+				let result = user.color;
+				if (result == undefined) {
+					result = "#DDDDDD";
+					Meteor.users.update(this.userId, {$set : {"color" : result}});
+				}
+				return result;
 			}
-			return result;
 		},
 		'getUserPosition' : function (id) {
 			let user = Meteor.users.findOne(id, {fields : {"position" : 1}});
-			return user.position;
+			if (user != undefined) {
+				let position = user.position;
+				if (position == undefined) {
+					position = {x:0,y:0};
+					Meteor.users.update(this.userId, {$set : {"position" : position}});
+				}
+				return position;
+			}
 		},
 		'player.setColor': function (color) {
-			if (color != undefined) { Meteor.users.update(this.userId, {$set : {"color" : color}});}
+			if (this.userId) {
+				if (color != undefined) {
+					Meteor.users.update(this.userId, {$set : {"color" : color}});
+				}
+			}
 		},
 		'player.setPosition': function (move) {
 			if (this.userId) {
