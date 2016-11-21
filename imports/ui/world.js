@@ -3,9 +3,17 @@ import { Template } from 'meteor/templating';
 import PIXI from 'pixi.js';
 
 import '../api/player.js';
+import '../api/world.js';
  
 import './world.html';
 
+
+Template.newWorld.events({
+	'click #createNewWorld' (event) {
+		event.preventDefault();
+		Meteor.call('createWorld', new Array ());
+	},
+});
 
 Template.body.onRendered = function () {
 	var interactive = true;
@@ -61,7 +69,7 @@ Template.body.onRendered = function () {
 
 	let lastUpdate = Date.now();
 	let delta = 0;
-	let DBUpdateRate = 20000;
+	let DBUpdateRate = 9000;
 	let lastDBUpdate = Date.now() - DBUpdateRate;
 
 	function theloop() {

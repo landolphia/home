@@ -10,6 +10,7 @@ if (Meteor.isServer) {
 				console.log("Found the item [" + item._id + "]");
 				let user = Meteor.users.findOne(this.userId, {fields: {"inventory" : 1}});
 				let inventory = user.inventory;
+				if (inventory == undefined) inventory = new Array();
 				let found = false;
 				inventory.forEach( function (i) {
 					if (i.id == item._id) {
@@ -53,22 +54,28 @@ if (Meteor.isServer) {
 			if (color != undefined) { Meteor.users.update(this.userId, {$set : {"color" : color}});}
 		},
 		'player.setPosition': function (move) {
-			if (move.x<0) move.x = 0;
-			if (move.x>300) move.x = 300;
-			if (move.y<0) move.y = 0;
-			if (move.y>300) move.y = 300;
-			Meteor.users.update(this.userId, {$set : {"position" : move}});
+			if (this.userId) {
+				if (move.x<0) move.x = 0;
+				if (move.x>300) move.x = 300;
+				if (move.y<0) move.y = 0;
+				if (move.y>300) move.y = 300;
+				Meteor.users.update(this.userId, {$set : {"position" : move}});
+				return move;
+			} else return {x: -1, y: -1};
 		},
 		'player.updatePosition': function (move) {
-			let position = Meteor.user().position;
-			if (position == undefined) position = {x:0,y:0};
-			position.x += move.x;
-			position.y += move.y;
-			if (position.x<0) position.x = 0;
-			if (position.x>300) position.x = 300;
-			if (position.y<0) position.y = 0;
-			if (position.y>300) position.y = 300;
-			Meteor.users.update(this.userId, {$set : {"position" : position}});
+			if (this.userId) {
+				let position = Meteor.user().position;
+				if (position == undefined) position = {x:0,y:0};
+				position.x += move.x;
+				position.y += move.y;
+				if (position.x<0) position.x = 0;
+				if (position.x>300) position.x = 300;
+				if (position.y<0) position.y = 0;
+				if (position.y>300) position.y = 300;
+				Meteor.users.update(this.userId, {$set : {"position" : position}});
+				return position;
+			} else return {x: -1, y: -1};
 		},
 	});
 }

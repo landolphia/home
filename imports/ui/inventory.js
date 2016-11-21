@@ -8,7 +8,9 @@ import './inventory.html';
 
 Template.body.helpers({
        	items () { return Items.find({});},
-	inventory () { return Meteor.user().inventory;}
+	inventory () {
+		if (Meteor.user()) return Meteor.user().inventory;
+	}
 });
 
 Template.inventorySlot.helpers({

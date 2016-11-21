@@ -1,20 +1,28 @@
 <body>
-	<h2>Inventory</h2>
-	<ul class="inventory">
-		{{#each inventory}}
-		{{> inventorySlot}}
-		{{/each}}
-	</ul>
-	<button type="button" id="addPen">+Pen</button>
-	<button type="button" id="addCondom">+Condom</button>
-	<button type="button" id="addBucket">+Bucket</button> - 
-	<button type="button" id="empty">Empty</button>
-	<h2>Items</h2>
-	<ul class="items">
-		{{#each items}}
-		{{> item}}
-		{{/each}}
-	</ul>
+	<table>
+		<tr>
+			<td>
+				<h2>Inventory</h2>
+				<ul class="inventory">
+					{{#each inventory}}
+					{{> inventorySlot}}
+					{{/each}}
+				</ul>
+				<button type="button" id="addPen">+Pen</button>
+				<button type="button" id="addCondom">+Condom</button>
+				<button type="button" id="addBucket">+Bucket</button> - 
+				<button type="button" id="empty">Empty</button>
+			</td>
+			<td>
+				<h2>Items</h2>
+				<ul class="items">
+					{{#each items}}
+					{{> item}}
+					{{/each}}
+				</ul>
+			</td>
+		</tr>
+	</table>
 	<button type="button" id="reset">Reset item collection</button>
 </body>
 
