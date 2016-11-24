@@ -3,24 +3,9 @@ import { Template } from 'meteor/templating';
 import PIXI from 'pixi.js';
 
 import '../api/player.js';
-import '../api/world.js';
  
 import './world.html';
 
-
-Template.newWorld.events({
-	'click #createNewWorld' (event) {
-		event.preventDefault();
-		if (this.userId) {
-			let selected = Session.get("selected");
-			if (selected != undefined) {
-				console.log("Should create a world with : " + this.userId + " /  "+ selected);
-				//Meteor.call('createWorld', new Array ());
-			}
-		}
-		c
-	},
-});
 
 Template.body.onRendered = function () {
 	var interactive = true;
@@ -90,37 +75,37 @@ Template.body.onRendered = function () {
 			lastDBUpdate = lastUpdate;
 
 			selected = Session.get("selected");
-			guestSprite.visible = (selected!=undefined);
-			guestMessage.visible = (selected!=undefined);
+			//guestSprite.visible = (selected!=undefined);
+			//guestMessage.visible = (selected!=undefined);
 			if (guestSprite.visible) {
-				Meteor.call('getUserName', selected, function(error, result) {
-					if (error) {
-						console.log("Couldn't retrieve username for user#" + selected);
-					} else {
-						guestMessage.text = result;
-					}
-				});
-				Meteor.call('getUserColor', selected, function(error, result) {
-					if (error) {
-						console.log("Couldn't retrieve color for user#" + selected);
-					} else {
-						let hex = parseInt(result.substr(1),16);
-						guestSprite.tint = hex;
-					}
-				});
-				Meteor.call('getUserPosition', selected, function(error, result) {
-					if (error) {
-						console.log("Couldn't retrieve position for user#" + selected);
-					} else {
-						guestSprite.position.x = result.x;
-						guestSprite.position.y = result.y;
-						guestMessage.position.x = result.x;
-						guestMessage.position.y = result.y - 70;
-						if (guestMessage.position.y < 10) {
-							guestMessage.position.y = result.y + 70;
-						}
-					}
-				});
+				//Meteor.call('getUserName', selected, function(error, result) {
+				//	if (error) {
+				//		console.log("Couldn't retrieve username for user#" + selected);
+				//	} else {
+				//		guestMessage.text = result;
+				//	}
+				//});
+				//Meteor.call('getUserColor', selected, function(error, result) {
+				//	if (error) {
+				//		console.log("Couldn't retrieve color for user#" + selected);
+				//	} else {
+				//		let hex = parseInt(result.substr(1),16);
+				//		guestSprite.tint = hex;
+				//	}
+				//});
+				//Meteor.call('getUserPosition', selected, function(error, result) {
+				//	if (error) {
+				//		console.log("Couldn't retrieve position for user#" + selected);
+				//	} else {
+				//		guestSprite.position.x = result.x;
+				//		guestSprite.position.y = result.y;
+				//		guestMessage.position.x = result.x;
+				//		guestMessage.position.y = result.y - 70;
+				//		if (guestMessage.position.y < 10) {
+				//			guestMessage.position.y = result.y + 70;
+				//		}
+				//	}
+				//});
 			}
 
 			let c = Meteor.user();

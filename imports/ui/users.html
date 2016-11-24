@@ -4,15 +4,29 @@
 
 		{{> loginButtons}}
 
-		<ul>
-			{{#each usersOnline}}
-			{{> user}}
-			{{/each}}
-		</ul>
+		<table>
+			<tr>
+				<td>
+					<ul>
+						{{#each usersOnline}}
+						{{> user}}
+						{{/each}}
+					</ul>
+				</td>
+				<td>
+					{{> worldButton}}
+				</td>
+			</tr>
+		</table>
 	</div>
 </body>
 
 <template name="user">
 	<li><span class="{{#if currentuser}}currentuser {{/if}}{{#if selected}}selected{{/if}}">{{username}}</span></li>
 
+</template>
+
+<template name="worldButton">
+	{{#if selection}}<button id="newWorld" type="button">New world</button>{{/if}}
+	{{#if existing}}<button id="joinWorld" type="button">Join world</button>{{/if}}
 </template>

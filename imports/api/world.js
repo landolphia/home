@@ -21,7 +21,7 @@ if (Meteor.isServer) {
 			console.log(what);
 			if (users.length >= 2) {
 				console.log("Create new world.");
-				console.log("Initialize messages, positions for starters.");
+				console.log("Initialize messages and positions for starters.");
 			}
 		}
 	});
