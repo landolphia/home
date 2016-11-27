@@ -33,6 +33,33 @@ if (Meteor.isServer) {
 				Meteor.users.update(this.userId, {$set : {"inventory" : inventory}});
 			}
 		},
+		'player.addWorld' : function (data) {
+			console.log("data: " + data);
+			check(data, {'user' : String, 'world' : String});
+			let userId = data.user;
+			let worldId = data.world;
+			let user = Meteor.users.findOne(userId);
+			let worlds = undefined;
+			if (user != undefined) worlds = user.worlds;
+			if (!Array.isArray(worlds)) worlds = new Array();
+
+			let exists = false;
+			worlds.forEach( function (w) {
+				if (w.id == worldId) exists == true;
+			});
+
+			if (! exists) {
+				worlds.push({'id' : worldId});
+				Meteor.users.update(userId, {$set : { 'worlds' : worlds }});
+			}
+		},
+		'player.getWorlds' : function () {
+			if (this.userId) {
+				let user = Meteor.users.findOne(id, { fields : { 'worlds' : 1 }});
+				let worlds = user.worlds;
+				return worlds;
+			}
+		},
 		'getUserName' : function (id) {
 			let user = Meteor.users.findOne(id, {fields: {"username" : 1}});
 			if (user != undefined) {
@@ -69,16 +96,6 @@ if (Meteor.isServer) {
 					Meteor.users.update(this.userId, {$set : {"color" : color}});
 				}
 			}
-		},
-		'player.setPosition': function (move) {
-			if (this.userId) {
-				if (move.x<0) move.x = 0;
-				if (move.x>300) move.x = 300;
-				if (move.y<0) move.y = 0;
-				if (move.y>300) move.y = 300;
-				Meteor.users.update(this.userId, {$set : {"position" : move}});
-				return move;
-			} else return {x: -1, y: -1};
 		},
 		'player.updatePosition': function (move) {
 			if (this.userId) {

@@ -3,28 +3,42 @@ import { Template } from 'meteor/templating';
 import PIXI from 'pixi.js';
 
 import '../api/player.js';
- 
+import '../api/world.js';
+
 import './world.html';
 
+import Worlds from '../api/world';
+
+var worldHandler = false;
+
+Tracker.autorun( function () {
+	let worldId = Session.get("worldId");
+	if (Meteor.userId() && (worldId != undefined)) {
+		newHandler = Meteor.subscribe('world', worldId);
+		if (worldHandler) worldHandler.stop();
+		worldHandler = newHandler;
+	}
+});
 
 Template.body.onRendered = function () {
-	var interactive = true;
-	let renderer = PIXI.autoDetectRenderer(300, 300);
-	renderer.backgroundColor = 0xC0C0C0;
-	let stage = new PIXI.Container();//Stage(0x66FF99, interactive);
+	var container = document.getElementById("worldContainer");
+	var renderer, stage, meepleTexture;
+	function setup (height, width) {
+		height = Math.min(768, Math.max(240, height));
+		width = Math.min(1270, Math.max(320, width));
+		console.log("Renderer: [" + height + " x " + width + "]");
 
-	let rectangle = new PIXI.Graphics();
-	let line = new PIXI.Graphics();
-	
-	var homeSprite = PIXI.Sprite.fromImage('placeholder.png');
-	var guestSprite = PIXI.Sprite.fromImage('placeholder.png');
-	guestSprite.rotation = 3.14159;
+		renderer = PIXI.autoDetectRenderer(height, width);
+		renderer.backgroundColor = 0xC0C0C0;
 
-	let homeMessage = new PIXI.Text("Home user", {font: "16px sans-serif"});
-	let guestMessage = new PIXI.Text( "Guest user", {font: "16px sans-serif"});
+		stage = new PIXI.Container();
 
-	let container = document.getElementById("worldContainer");
-	container.appendChild(renderer.view);
+		meepleTexture = PIXI.Texture.fromImage('placeholder.png');
+
+		container.appendChild(renderer.view);
+		renderer.render(stage);
+	}
+	setup(640, 480);
 
 	function getClickPosition(e) {
 		let x = { x: 0, y: 0};
@@ -45,107 +59,92 @@ Template.body.onRendered = function () {
 			p = {x : canvas.x, y : canvas.y};
 		}
 		console.log("p= " + p.x + " / " + p.y);
-		Meteor.call('player.setPosition', {x: p.x, y: p.y}, function (error, result) {
-			if (error) {
-				console.log("Failed to set player position.");
-			} else {
-				console.log("Succesfully set player position to : " + result.x + " / " + result.y);
-			}
-		});
+		let worldId = Session.get("worldId");
+		if (worldId != undefined) {
+			Meteor.call('world.setPlayerPosition', {
+					'id' : worldId,
+					'move' : {
+						'x': p.x,
+						'y': p.y}},
+				function (error, result) {
+				if (error) {
+					console.log("Failed to set player position.");
+				} else {
+					console.log("Succesfully set player position to : " + result.x + " / " + result.y);
+				}
+					dirty = true;
+			});
+		}
 	}
 	container.addEventListener("click", getClickPosition, false);
 
-	setup();
-
-	let selected = undefined;
+	let dirty = false;
 
 	let lastUpdate = Date.now();
 	let delta = 0;
-	let DBUpdateRate = 2000;
+	let DBUpdateRate = 4000;
 	let lastDBUpdate = Date.now() - DBUpdateRate;
+	let previousWorldId = Session.get("worldId");
 
 	function theloop() {
 		now = Date.now();
 		delta = now - lastUpdate;
 		lastUpdate = now;
 
+		let worldId = Session.get("worldId");
 		if ((lastUpdate > (lastDBUpdate + DBUpdateRate)) &&
-		(Meteor.userId() && Meteor.user())) {
-			console.log("Updating Data: " + now);
+		(Meteor.userId() && Meteor.user()) &&
+		(worldId != undefined)) {
 			lastDBUpdate = lastUpdate;
-
-			selected = Session.get("selected");
-			//guestSprite.visible = (selected!=undefined);
-			//guestMessage.visible = (selected!=undefined);
-			if (guestSprite.visible) {
-				//Meteor.call('getUserName', selected, function(error, result) {
-				//	if (error) {
-				//		console.log("Couldn't retrieve username for user#" + selected);
-				//	} else {
-				//		guestMessage.text = result;
-				//	}
-				//});
-				//Meteor.call('getUserColor', selected, function(error, result) {
-				//	if (error) {
-				//		console.log("Couldn't retrieve color for user#" + selected);
-				//	} else {
-				//		let hex = parseInt(result.substr(1),16);
-				//		guestSprite.tint = hex;
-				//	}
-				//});
-				//Meteor.call('getUserPosition', selected, function(error, result) {
-				//	if (error) {
-				//		console.log("Couldn't retrieve position for user#" + selected);
-				//	} else {
-				//		guestSprite.position.x = result.x;
-				//		guestSprite.position.y = result.y;
-				//		guestMessage.position.x = result.x;
-				//		guestMessage.position.y = result.y - 70;
-				//		if (guestMessage.position.y < 10) {
-				//			guestMessage.position.y = result.y + 70;
-				//		}
-				//	}
-				//});
-			}
-
-			let c = Meteor.user();
-			if ( (c != undefined) && (c.color != undefined)) {
-				homeSprite.visible = true;
-				homeSprite.position.x = c.position.x;
-				homeSprite.position.y = c.position.y;
-				homeMessage.position.x = c.position.x;
-				homeMessage.position.y = c.position.y - 70;
-				if (homeMessage.position.y < 10) {
-					homeMessage.position.y = c.position.y + 70;
-				}
-				let hex = parseInt(c.color.substr(1),16);
-				homeSprite.tint = hex;
-				homeMessage.text = Meteor.user().username;
-				homeMessage.style.fill = hex;
-			}
+			dirty = dirty || (previousWorldId != worldId);
+			if (dirty) {
+				console.log("Updating world data: " + now + " [" + previousWorldId + " x " + worldId + "]");
+				previousWorldId = worldId;
+				reloadWorld(worldId);
+			} else { console.log("Clean, no update");}
 		}
 
 		requestAnimationFrame(theloop);
 		renderer.render(stage);
 	};
+	theloop();
 
-	function setup() {
-		homeMessage.style.strokeThickness = 5;
-		stage.addChild(homeMessage);
-		guestMessage.visible = false;
-		stage.addChild(guestMessage);
-
-		homeSprite.visible = false;
-		homeSprite.anchor.x = 0.5;
-		homeSprite.anchor.y = 0.5;
-		guestSprite.visible = false;
-		guestSprite.anchor.x = 0.5;
-		guestSprite.anchor.y = 0.5;
-
-		stage.addChild(homeSprite);
-		stage.addChild(guestSprite);
-
-		renderer.render(stage);
-		theloop();
-	}
-};
+	function resetStage (result) {
+		console.log("Reset stage");
+		stage = new PIXI.Container();
+		result.population.forEach( function (p) {
+			Meteor.call('getUserColor', p.id, function(error, result) {
+				if (error) {
+					console.log("Couldn't retrieve color for user#" + p.id);
+				} else {
+					let s = new PIXI.Sprite(meepleTexture);
+					let hex = parseInt(result.substr(1),16);
+					console.log("Customising sprite for user#" + p.id + " -> " + hex.toString() + "[" + p.position.x + ", " +  p.position.y + "]");
+					s.tint = hex;
+					s.position.x = p.position.x;
+					s.position.y = p.position.y;
+					stage.addChild(s);
+				}
+			});
+		});
+	};
+	
+	function reloadWorld (id) {
+		console.log("Reloading world.");
+		let worldId = Session.get("worldId");
+		if ((worldHandler != undefined) &&
+			(worldHandler.ready())) {
+			let result = Worlds.findOne(worldId);
+			if ((result != undefined) &&
+				(result.population != undefined)) {
+					let population = result.population;
+					population.forEach( function (e) {
+						console.log("E: " + e.id);
+					});
+					Session.set("world", result);
+					resetStage(result);
+					dirty = false;
+				}
+		} else { console.log("Waiting for subscription.")};
+	};
+}

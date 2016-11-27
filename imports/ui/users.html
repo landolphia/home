@@ -6,27 +6,49 @@
 
 		<table>
 			<tr>
+				<th>{{> onlineSwitch}} {{> createWorld}}</th>
+				<th>Worlds the user belongs to.</th>
+			</tr>
+			<tr>
 				<td>
 					<ul>
-						{{#each usersOnline}}
-						{{> user}}
-						{{/each}}
+						{{#if onlineOnly}}
+							{{#each usersOnline}}
+							{{> user}}
+							{{/each}}
+						{{else}}
+							{{#each allUsers}}
+							{{> user}}
+							{{/each}}
+						{{/if}}
 					</ul>
 				</td>
 				<td>
-					{{> worldButton}}
+					<ul>
+						{{#each worlds}}
+						{{>userWorld}}
+						{{/each}}
+					</ul>
 				</td>
 			</tr>
 		</table>
 	</div>
 </body>
 
+<template name="onlineSwitch">
+	{{#if onlineOnly}}<button id="userListFilter" type="button">Online</button>
+	{{else}}<button id="userListFilter" type="button">All</button>{{/if}}
+</template>
+
 <template name="user">
 	<li><span class="{{#if currentuser}}currentuser {{/if}}{{#if selected}}selected{{/if}}">{{username}}</span></li>
 
 </template>
 
-<template name="worldButton">
+<template name="userWorld">
+	<li><button class="{{#if selected}}selected {{/if}}" id="joinWorld" type="button"> Join #{{id}} </button></li>
+</template>
+
+<template name="createWorld">
 	{{#if selection}}<button id="newWorld" type="button">New world</button>{{/if}}
-	{{#if existing}}<button id="joinWorld" type="button">Join world</button>{{/if}}
 </template>

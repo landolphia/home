@@ -17,7 +17,6 @@ if (Meteor.isServer) {
 				return Messages.find({to: null}, {sort: {createdAt: -1}, limit: 5});
 			}
 		}
-		self.ready();
 	});
 
 	Meteor.methods({

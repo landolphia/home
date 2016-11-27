@@ -1,18 +1,37 @@
 import { Template } from 'meteor/templating';
 
 import './users.html';
-import '../api/world.js';
+import '../api/users.js';
+import '../api/player.js';
 
-import Messages from '../api/messages.js';
+//import Messages from '../api/messages.js';
 
-var messageHandler = false;
+//var messageHandler = false;
 
-Template.body.onCreated(function bodyOnCreated() {
-	Meteor.subscribe('usersOnline');
-	messageHandler = Meteor.subscribe('messages', undefined);
+Tracker.autorun( function () {
+	if (Meteor.userId()) {
+		Meteor.subscribe('usersOnline');
+		Meteor.subscribe('users');
+		//messageHandler = Meteor.subscribe('messages', undefined);
+	}
 });
 
 Template.body.helpers({
+	worlds: function () {
+		if (Meteor.userId() && Meteor.user() && Meteor.user().worlds) {
+			return Meteor.user().worlds;
+		} else { 
+			return [{_id:"No worlds"}];
+		}
+	},
+	onlineOnly: function () {
+		let result = Session.get("userListFilter");
+		if ((result != undefined) &&
+		       (result == "Online"))	{
+			       return true;
+		}
+		return false;
+	},
 	player: function () {
 		if (Meteor.userId() && Meteor.user())
 			return Meteor.user().username;
@@ -25,6 +44,9 @@ Template.body.helpers({
 			if ( p != undefined ) return "[" + p.x + "/" + p.y + "]";
 			else return "--";
 		}
+	},
+	allUsers: function () {
+		return Meteor.users.find({});
 	},
 	usersOnline: function () {
 		return Meteor.users.find({"status.online":true});
@@ -43,23 +65,27 @@ Template.user.events({
 			       }
 			       if (!selected.includes(this._id)) {
 				       selected.push(this._id);
+			       } else {
+				       let index = selected.indexOf(this._id);
+				       if (index > -1) {
+					       selected.splice(index, 1);
+				       }
 			       }
 
 			       Session.set("selected", selected);
-			       // (This doesn't mean much anymore once I fold the messages into the world
-			       var newHandler = Meteor.subscribe('messages', this._id);
+			       //var newHandler = Meteor.subscribe('messages', this._id);
 		       } else {
 			       Session.set("selected", undefined);
-			       var newHandler = Meteor.subscribe('messages', undefined);
+			       //var newHandler = Meteor.subscribe('messages', undefined);
 		       }
 		}
 
-		if (messageHandler) messageHandler.stop();
-		messageHandler = newHandler;
+		//if (messageHandler) messageHandler.stop();
+		//messageHandler = newHandler;
 	},
 });
 
-Template.worldButton.events({
+Template.createWorld.events({
 	'click #newWorld' (event) {
 		event.preventDefault();
 		if (Meteor.userId()) {
@@ -68,15 +94,10 @@ Template.worldButton.events({
 				Meteor.call('createWorld', selected);
 			}
 		}
-
-	},
-	'click #joinWorld' (event) {
-		event.preventDefault();
-		console.log("Will join world.");
 	},
 });
 
-Template.worldButton.helpers({
+Template.createWorld.helpers({
 	selection: function () {
 		let selected = Session.get("selected");
 		return (selected != undefined &&
@@ -84,6 +105,7 @@ Template.worldButton.helpers({
 			selected.length >= 2);
 	},
 	existing: function () {
+
 		console.log("Checks if an existing world with the selected users exists");
 		return false;
 	},
@@ -101,11 +123,50 @@ Template.user.helpers({
 
 			if (Array.isArray(selected)) {
 				selected.forEach(function (e) {
-					console.log("testing: " + e + " vs " + userId);
 					if (e == userId) result = true;
 				});
 			}
 		}
 		return result;
+	},
+});
+
+Template.onlineSwitch.helpers({
+	onlineOnly: function () {
+		let result = Session.get("userListFilter");
+		if ((result != undefined) &&
+		       (result == "Online"))	{
+			       return true;
+		}
+		return false;
+	},
+});
+
+Template.onlineSwitch.events({
+	'click #userListFilter' (event) {
+		event.preventDefault();
+		let userListFilter= Session.get("userListFilter");
+		if ((userListFilter != undefined) && (userListFilter == "All")){
+			Session.set("userListFilter", "Online");
+		} else {
+			Session.set("userListFilter", "All");
+		}
+	},
+});
+
+Template.userWorld.helpers({
+	'selected': function () {
+		let result = Session.get("worldId");
+		if (result != undefined) {
+			return (result == this.id);
+		}
+	},
+});
+
+Template.userWorld.events({
+	'click button' (event) {
+		event.preventDefault();
+		console.log("Setting world to " + this.id);
+		Session.set("worldId", this.id);
 	},
 });
